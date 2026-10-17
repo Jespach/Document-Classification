@@ -319,17 +319,14 @@ def main() -> None:
         result["source_text_preview"] = text[:500]
         results.append(result)
 
-    print(f"{'File':<35} | {'Category':<18} | {'Price':>14} | {'Confidence':>10}")
-    print("-" * 110)
+    print(f"{'File':<35} | {'Category':<18} | {'Confidence':>10}")
+    print("-" * 80)
     for result in results:
         label = result.get("label", "unknown")
         confidence = float(result.get("confidence", 0.0) or 0.0)
-        price = extract_price_from_text(result.get("source_text_preview", ""))
-        print(f"{result.get('file', 'unknown'):<35} | {label:<18} | {price:>14} | {confidence:>10.2f}")
+        print(f"{result.get('file', 'unknown'):<35} | {label:<18} | {confidence:>10.2f}")
 
-    print("-" * 110)
-    OUTPUT_FILE.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"Saved full results to {OUTPUT_FILE}")
+    print("-" * 80)
 
 
 if __name__ == "__main__":

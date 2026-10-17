@@ -37,6 +37,7 @@ The workflow is:
 - Cover-note-only emails: if the body clearly refers to an absent attachment but contains no actual document content, the model should classify as `other` with `missing_attachment` set to `true`.
 - `.xls` limitation: legacy `.xls` files are not supported by `openpyxl`; the script raises a clear error and asks the user to convert to `.xlsx` first.
 - Model override: the model name can be set with `OPENROUTER_MODEL` or the `--model` CLI flag. The default remains `openai/gpt-5.6-luna`.
+- Supplier Invoices include both Tax Invoices and Proforma Invoices
 
 ## OpenRouter API contract
 
@@ -128,3 +129,42 @@ At scale (average cost):
 |---|---|---|
 | 200 documents/day | ~$0.06 | ~R1.01 |
 | 1,000 documents | ~$0.30 | ~R5.03 |
+
+
+## System 1 Model Testing (JEV)
+
+- You will see system_1_test.py, this was just to see  what its performance would be like. Unfortunately it did not have the best results.
+
+### Running `system_1_test.py`
+
+This script is a lightweight JEV-style proof of concept that converts each supported file to text before sending it to the OpenRouter decision endpoint.
+
+Requirements:
+
+- Python environment with the project dependencies installed
+- a valid `.env` file containing `OPENROUTER_API_KEY`
+- optionally `OPENROUTER_MODEL` if you want to override the default model
+- files placed in an `input/` folder or another folder passed with `--input-dir`
+- `tesseract` installed and available on your PATH for OCR on image files
+
+Run it from the project root:
+
+```bash
+py system_1_test.py --input-dir Input
+```
+
+or:
+
+```bash
+.\.venv\Scripts\python.exe system_1_test.py --input-dir Input
+```
+
+This script prints one row per document in the format:
+
+```text
+File                                 | Category           | Confidence
+-------------------------------------|--------------------|-----------
+filename.pdf                        | supplier_invoice   |     0.62
+```
+
+It is intended as a comparison test, not the production path for the main classifier.
