@@ -16,7 +16,7 @@ Classify the document according to its primary purpose, not merely the presence 
 
 **1. supplier_invoice**
 
-A document issued by a supplier requesting payment for goods or services. Typical evidence includes an invoice number, invoice date, supplier details, line items, amounts due, payment terms, VAT or tax details, and a total payable. Include Proforma Invoices
+A document issued by a supplier requesting payment for goods or services. Typical evidence includes a Tax or Proforma Invoice Heading, invoice number, invoice date, supplier details, line items, amounts due, payment terms, VAT or tax details, and a total payable. Include Proforma Invoices
 
 **2. credit_note**
 

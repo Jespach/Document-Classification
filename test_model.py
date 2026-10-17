@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from script import analyze_document, get_api_key
+from classify import classify_file, get_api_key, get_model_name
 
 
 # Update this mapping if you want to override the expected label for any case.
@@ -24,8 +24,8 @@ def iter_test_files(folder: Path):
     return sorted(files, key=lambda p: p.name.lower())
 
 
-def run_case(file_path: Path, api_key: str):
-    result = analyze_document(file_path, api_key)
+def run_case(file_path: Path, api_key: str, model_name: str):
+    result = classify_file(file_path, api_key, model_name)
     predicted = result["result"].get("label")
     expected = EXPECTED_LABELS.get(file_path.name)
 
@@ -47,6 +47,7 @@ def run_case(file_path: Path, api_key: str):
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run model evaluation against known test cases in the test_cases folder.")
     parser.add_argument("--folder", default="test_cases", help="Folder containing test documents.")
+    parser.add_argument("--model", default=None, help="Model name for OpenRouter. Defaults to OPENROUTER_MODEL or openai/gpt-5.6-luna.")
     args = parser.parse_args()
 
     api_key = get_api_key()
@@ -54,6 +55,7 @@ def main() -> None:
         print("No OpenRouter API key found. Add OPENROUTER_API_KEY or API_KEY to your .env file.")
         return
 
+    model_name = args.model or get_model_name()
     folder = Path(__file__).resolve().parent / args.folder
     files = iter_test_files(folder)
     if not files:
@@ -70,7 +72,7 @@ def main() -> None:
 
     for file_path in files:
         total_count += 1
-        case = run_case(file_path, api_key)
+        case = run_case(file_path, api_key, model_name)
         expected = case["expected"] if case["expected"] is not None else "n/a"
         actual = case["predicted"] if case["predicted"] is not None else "n/a"
         status = "PASS" if case["passed"] else "FAIL"
