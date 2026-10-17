@@ -74,6 +74,10 @@ Allowed labels:
 - `remittance_advice`
 - `other`
 
+## Output file
+
+Each run writes the full classification results to `output.json` in the project root. This file stores the complete per-document result payload so you can keep a full audit trail of every run.
+
 ## Project files
 
 - `ingest.py` - ingestion and extraction logic
@@ -107,14 +111,20 @@ Create a local `.env` file from `.env.example` and set values such as:
 
 This project intentionally keeps a single model call per document and uses the strict JSON schema to keep the output predictable and reviewable.
 
-## Cost summary reporting
+## Cost summary 
 
-The model evaluation output can be reported in a per-document table showing:
 
-- document name
-- predicted category
-- short reasoning summary
-- cost in USD for that file
+| Metric | USD per document | ZAR per document |
+|---|---|---|
+| Average | $0.000305 | R0.0050 |
+| Minimum | $0.000178 | R0.0029 |
+| Maximum | $0.000392 | R0.0065 |
+| Median | $0.000308 | R0.0051 |
+| Total (12 docs) | $0.003655 | R0.0603 |
 
-A summary section can also report the minimum, maximum, and average cost across the processed documents so the run is easier to compare and review.
+At scale (average cost):
 
+| Volume | USD | ZAR |
+|---|---|---|
+| 200 documents/day | ~$0.06 | ~R1.01 |
+| 1,000 documents | ~$0.30 | ~R5.03 |

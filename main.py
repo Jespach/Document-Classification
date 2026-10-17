@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from classify import classify_file, get_api_key, get_model_name
 from ingest import SUPPORTED_EXTENSIONS, list_input_files, resolve_input_dir
+
+
+OUTPUT_FILE = Path(__file__).resolve().parent / "output.json"
 
 
 def format_table_row(file_name: str, document_type: str, reasoning: str, cost: float | None) -> str:
@@ -41,6 +45,7 @@ def main() -> None:
         return
 
     model_name = args.model or get_model_name()
+    results = []
 
     print(f"Found {len(supported_files)} supported file(s). Processing...")
     print(f"{'File':<30} | {'Document Type':<18} | {'Reasoning':<80} | {'Cost (USD)'}")
@@ -48,6 +53,7 @@ def main() -> None:
     for file_path in supported_files:
         try:
             result = classify_file(file_path, api_key, model_name)
+            results.append(result)
             row = format_table_row(
                 result["file"],
                 result["result"].get("label", "unknown"),
@@ -57,6 +63,9 @@ def main() -> None:
             print(row)
         except Exception as exc:
             print(format_table_row(file_path.name, "error", str(exc), None))
+
+    OUTPUT_FILE.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"\nSaved full results to {OUTPUT_FILE}")
 
 
 if __name__ == "__main__":

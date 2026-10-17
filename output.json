@@ -1,0 +1,187 @@
+[
+  {
+    "file": "ATM_INV_7740.pdf",
+    "result": {
+      "label": "supplier_invoice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly headed \"INVOICE\" and identifies document number 7740 and date 08/10/2026.",
+        "It is explicitly marked \"PFI\" and states \"PFI = PRO FORMA INVOICE.\"",
+        "The document contains supplier and customer details, itemised goods, subtotal, VAT, total, and a deposit required amount.",
+        "The payment terms state \"50% DEP / BAL ON DISPATCH,\" indicating a request for payment for supplied goods."
+      ],
+      "reasoning": "This is a pro forma invoice requesting a deposit for textile goods. Although it is not a valid tax invoice and the tax invoice will be issued on dispatch, pro forma invoices are included in the supplier_invoice category; it is not a credit note, statement, or remittance advice.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00034316
+  },
+  {
+    "file": "BPE statement export.xlsx",
+    "result": {
+      "label": "statement",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"Customer Statement\".",
+        "It specifies an account and reporting period: 01/09/2026 - 30/09/2026.",
+        "It includes an opening balance, multiple invoice and payment transactions, and a closing balance of 53590."
+      ],
+      "reasoning": "The document summarises account activity over a defined period, including invoices, a payment, running balances, and a closing balance. Its primary purpose is therefore a statement rather than an individual invoice or remittance advice.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.0001848
+  },
+  {
+    "file": "BPE_CN0087.pdf",
+    "result": {
+      "label": "credit_note",
+      "confidence": 1.0,
+      "evidence": [
+        "The document is explicitly headed \"TAX CREDIT NOTE\".",
+        "It identifies credit note CN0087 and references original invoice 3318.",
+        "The stated reason is misaligned embroidery and returned units, with a total credit of R 1,159.20.",
+        "It states that the credit will be applied to the customer's account."
+      ],
+      "reasoning": "This is a supplier-issued document reducing a prior invoice due to returned defective goods, so its primary purpose is to record a credit rather than request payment or summarise account activity.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.0002355
+  },
+  {
+    "file": "Cape Swing Tags 2291.pdf",
+    "result": {
+      "label": "supplier_invoice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"PRO FORMA INVOICE\".",
+        "It includes supplier and customer details, invoice number PF-2291, date, line items, VAT, and an amount payable of R 22,310.00.",
+        "It states that full payment is required before production can be scheduled."
+      ],
+      "reasoning": "This is a pro forma invoice requesting advance payment for specified goods. Pro forma invoices are included in the supplier_invoice category, despite the note that a tax invoice will be issued later.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00023288
+  },
+  {
+    "file": "FW_ Invoice October.eml",
+    "result": {
+      "label": "other",
+      "confidence": 0.98,
+      "evidence": [
+        "The supplied item is an email forwarding a referenced invoice, not the invoice itself.",
+        "The email states that invoice 3342 is attached, but no attachment was detected.",
+        "The email body is general forwarding correspondence and does not itself provide a complete invoice document or payment allocation."
+      ],
+      "reasoning": "The primary supplied document is an email, and the referenced invoice is missing. Although the email mentions invoice details, it does not itself function as a supplier invoice, credit note, statement, or remittance advice.",
+      "missing_attachment": true
+    },
+    "cost_usd": 0.00033182
+  },
+  {
+    "file": "HL-INV-55031.pdf",
+    "result": {
+      "label": "supplier_invoice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly headed \"TAX INVOICE\" and identifies invoice number 55031 and date 22/09/2026.",
+        "It lists supplier services, quantities, unit prices, VAT, and a total due of R 18,506.38.",
+        "A paid stamp is present, but the document's primary purpose remains issuing and documenting the supplier invoice rather than communicating payment allocation."
+      ],
+      "reasoning": "This is a supplier tax invoice with itemised logistics services and a total payable. The later paid stamp does not change its primary document type to a remittance advice, as there are no payment allocation details or remittance instructions.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.0003698
+  },
+  {
+    "file": "Invoice_HL-55107.pdf",
+    "result": {
+      "label": "credit_note",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"TAX INVOICE\" but all line items are labelled \"CREDIT\" and reference original invoice 55031.",
+        "The subtotal, VAT, and total due are negative, totalling -R 4,082.50.",
+        "It states that negative balances will be offset against the next invoice, indicating a reduction rather than a payment request."
+      ],
+      "reasoning": "Although formatted as a tax invoice, its primary purpose is to credit failed-delivery and service-related charges from a prior invoice, reducing the amount owed.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00024092
+  },
+  {
+    "file": "Karoo Knitwear - 10482.pdf",
+    "result": {
+      "label": "supplier_invoice",
+      "confidence": 1.0,
+      "evidence": [
+        "The document is explicitly headed “TAX INVOICE”.",
+        "It includes invoice number 10482, invoice date 29/09/2026, supplier and bill-to details, and payment terms of 30 days.",
+        "It lists supplied goods with quantities, unit prices, subtotal, VAT, and a total due of R 103,385.00.",
+        "It specifies a payment due date of 29/10/2026."
+      ],
+      "reasoning": "This is a supplier invoice requesting payment for listed knitwear goods, with a clear total payable and payment terms. It is not a credit note, statement, or remittance advice.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00026434
+  },
+  {
+    "file": "Payment advice 14102026.pdf",
+    "result": {
+      "label": "remittance_advice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"PAYMENT ADVICE\".",
+        "It states that the listed invoices have been settled by EFT and provides a payment date and bank reference.",
+        "It includes invoice numbers, invoice amounts, and amounts paid for allocation, with a total paid of 41,975.50.",
+        "The request to issue a credit note is a separate note about a short-paid invoice, not the primary purpose of the document."
+      ],
+      "reasoning": "The document primarily communicates a payment and explains how it should be allocated against specific supplier invoices, which is characteristic of a remittance advice rather than an invoice, credit note, or statement.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.0002154
+  },
+  {
+    "file": "Remittance - Touchline Sports.pdf",
+    "result": {
+      "label": "remittance_advice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"REMITTANCE ADVICE\".",
+        "It provides a payment date, EFT payment method, and payment reference.",
+        "It lists multiple invoice numbers with invoice amounts and corresponding amounts paid, including a credited item.",
+        "The document states that payment has been made to the supplier's account and gives a total paid of 69,920.00."
+      ],
+      "reasoning": "The document communicates a completed payment and explains its allocation across invoices and a credit. Its primary purpose is therefore remittance advice, not an invoice, credit note, or account statement.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00040348
+  },
+  {
+    "file": "scan_20261009_0012.jpg",
+    "result": {
+      "label": "supplier_invoice",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly headed “TAX INVOICE.”",
+        "It includes invoice number 10495, invoice date, supplier and bill-to details, payment terms, and a purchase order reference.",
+        "It lists supplied goods with quantities, unit prices, VAT, and a total due of R34,270.00."
+      ],
+      "reasoning": "This is a supplier tax invoice requesting payment for itemised goods. The handwritten receipt notation does not change its primary purpose, and it is not a statement, credit note, or remittance advice.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00023528
+  },
+  {
+    "file": "Statement_Sep2026_ATM.pdf",
+    "result": {
+      "label": "statement",
+      "confidence": 0.99,
+      "evidence": [
+        "The document is explicitly titled \"STATEMENT OF ACCOUNT\" and gives a statement date of 30/09/2026.",
+        "It summarises multiple invoices, a payment, a credit note, and a closing balance of R 150,121.75.",
+        "The remittance slip is a subordinate detachable section, not the primary purpose of the document."
+      ],
+      "reasoning": "The document primarily summarises account activity and the outstanding balance over a period, so it is a statement rather than an invoice, credit note, or remittance advice.",
+      "missing_attachment": false
+    },
+    "cost_usd": 0.00048516
+  }
+]
