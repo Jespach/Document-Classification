@@ -9,6 +9,7 @@ from typing import Any
 
 import requests
 from dotenv import load_dotenv
+from openpyxl import load_workbook
 
 
 SUPPORTED_EXTENSIONS = {
@@ -20,6 +21,9 @@ SUPPORTED_EXTENSIONS = {
     ".tiff",
     ".bmp",
     ".gif",
+    ".xlsx",
+    ".xlsm",
+    ".xls",
 }
 
 
@@ -155,11 +159,50 @@ def file_to_data_url(file_path: Path) -> str:
     return f"data:{mime_type};base64,{encoded}"
 
 
+def extract_excel_text(file_path: Path) -> str:
+    if file_path.suffix.lower() == ".xls":
+        raise ValueError("Legacy .xls files are not supported by openpyxl. Please convert to .xlsx first.")
+
+    workbook = load_workbook(file_path, read_only=True, data_only=True)
+    sheet_sections: list[str] = []
+
+    for sheet in workbook.worksheets:
+        rows = list(sheet.iter_rows(values_only=True))
+        if not rows:
+            continue
+
+        rows_text: list[str] = [f"Sheet: {sheet.title}"]
+        for row_index, row in enumerate(rows, start=1):
+            cleaned_values = ["" if value is None else str(value).strip() for value in row]
+            if not any(value for value in cleaned_values):
+                continue
+            rows_text.append(f"Row {row_index}: | " + " | ".join(cleaned_values))
+
+        if len(rows_text) > 1:
+            sheet_sections.append("\n".join(rows_text))
+
+    workbook.close()
+    return "\n\n".join(sheet_sections) if sheet_sections else "No rows found in spreadsheet."
+
+
 def build_user_message(file_path: Path) -> dict[str, Any]:
     prompt = build_document_prompt(file_path)
-    data_url = file_to_data_url(file_path)
+    ext = file_path.suffix.lower()
 
-    if file_path.suffix.lower() == ".pdf":
+    if ext in {".xlsx", ".xlsm", ".xls"}:
+        spreadsheet_text = extract_excel_text(file_path)
+        return {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": f"{prompt}\n\nStructured spreadsheet content:\n{spreadsheet_text}",
+                }
+            ],
+        }
+
+    data_url = file_to_data_url(file_path)
+    if ext == ".pdf":
         return {
             "role": "user",
             "content": [
