@@ -322,9 +322,9 @@ def classify_email_attachments(file_path: Path, api_key: str, model_name: str) -
             best_result = max(supported_results, key=_conf)
     else:
         best_result = max(supported_results, key=_conf)
-    evidence = [f"Found {len(supported_results)} supported attachment(s) in the email.']
 
-    # Note selection rationale
+    evidence = [f"Found {len(supported_results)} supported attachment(s) in the email."]
+
     if best_result["result"].get("label") != "other":
         evidence.append(
             f"Selected attachment {best_result['file']} because it had the highest confidence among non-'other' labels ({best_result['result'].get('confidence')})."
