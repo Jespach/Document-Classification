@@ -9,6 +9,11 @@ from typing import Any
 
 from openpyxl import load_workbook
 
+# Utilities for reading and preparing input files.
+# - Locate input directories and list files
+# - Convert files to data URLs for model upload
+# - Extract text from Excel files and parse email bodies/attachments
+
 
 SUPPORTED_EXTENSIONS = {
     ".pdf",
@@ -40,6 +45,7 @@ SUPPORTED_ATTACHMENT_EXTENSIONS = {
 }
 
 
+# Resolve the best input directory for processing.
 def resolve_input_dir(raw_dir: str | None) -> Path:
     base_dir = Path(__file__).resolve().parent
     candidates: list[Path] = []
@@ -56,6 +62,7 @@ def resolve_input_dir(raw_dir: str | None) -> Path:
     return (base_dir / "input").resolve()
 
 
+# List files in a directory recursively.
 def list_input_files(input_dir: Path) -> list[Path]:
     if not input_dir.exists():
         return []
@@ -63,6 +70,7 @@ def list_input_files(input_dir: Path) -> list[Path]:
     return sorted(files, key=lambda path: str(path).lower())
 
 
+# Convert a file into a browser-ready data URL.
 def file_to_data_url(file_path: Path) -> str:
     extension = file_path.suffix.lower().lstrip(".")
     mime_map = {
@@ -80,6 +88,7 @@ def file_to_data_url(file_path: Path) -> str:
     return f"data:{mime_type};base64,{encoded}"
 
 
+# Extract readable values from an Excel workbook.
 def extract_excel_text(file_path: Path) -> str:
     if file_path.suffix.lower() == ".xls":
         raise ValueError("Legacy .xls files are not supported by openpyxl. Please convert to .xlsx first.")
@@ -106,6 +115,7 @@ def extract_excel_text(file_path: Path) -> str:
     return "\n\n".join(sheet_sections) if sheet_sections else "No rows found in spreadsheet."
 
 
+# Pull out the visible text from an email body.
 def parse_email_body(message) -> str:
     body_parts: list[str] = []
     for part in message.walk():
@@ -122,6 +132,7 @@ def parse_email_body(message) -> str:
     return "\n\n".join(body_parts)
 
 
+# Gather supported email attachments and metadata.
 def parse_email_attachments(message) -> list[dict[str, Any]]:
     attachments: list[dict[str, Any]] = []
     for part in message.walk():
@@ -143,6 +154,7 @@ def parse_email_attachments(message) -> list[dict[str, Any]]:
     return attachments
 
 
+# Read a .eml file and return cleaned email fields.
 def extract_email_metadata(file_path: Path) -> dict[str, Any]:
     raw = file_path.read_bytes()
     message = BytesParser(policy=policy.default).parsebytes(raw)
@@ -157,6 +169,7 @@ def extract_email_metadata(file_path: Path) -> dict[str, Any]:
     }
 
 
+# Detect wording suggesting a missing attachment in the email.
 def detect_missing_attachment(body: str) -> bool:
     if not body:
         return False

@@ -1,5 +1,10 @@
 from __future__ import annotations
 
+# Simple document classification helpers.
+# - Builds prompts and messages for the OpenRouter model
+# - Parses and validates model JSON responses
+# - Handles email attachments and selects the best attachment result
+
 import json
 import os
 from pathlib import Path
@@ -48,21 +53,25 @@ JSON_SCHEMA = {
 }
 
 
+# Get OpenRouter API key from environment.
 def get_api_key() -> str | None:
     load_dotenv()
     return os.getenv("OPENROUTER_API_KEY") or os.getenv("API_KEY")
 
 
+# Get the configured model name.
 def get_model_name() -> str:
     load_dotenv()
     return os.getenv("OPENROUTER_MODEL", "openai/gpt-5.6-luna")
 
 
+# Get the OpenRouter base URL.
 def get_openrouter_base_url() -> str:
     load_dotenv()
     return os.getenv("OPENROUTER_BASE_URL") or "https://openrouter.ai/api/v1"
 
 
+# Load the prompt template from disk.
 def load_prompt_template() -> str:
     prompt_path = Path(__file__).resolve().parent / "prompt.md"
     if prompt_path.exists():
@@ -71,6 +80,7 @@ def load_prompt_template() -> str:
     return ""
 
 
+# Build the text prompt for the model.
 def build_document_prompt(file_path: Path) -> str:
     prompt_template = load_prompt_template()
     if prompt_template:
@@ -86,6 +96,7 @@ def build_document_prompt(file_path: Path) -> str:
     )
 
 
+# Validate the model output shape and values.
 def sanitize_classification_payload(payload: dict[str, Any]) -> dict[str, Any]:
     label = payload.get("label")
     if label not in {"supplier_invoice", "credit_note", "statement", "remittance_advice", "other"}:
@@ -121,6 +132,7 @@ def sanitize_classification_payload(payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+# Parse a cleaned JSON response from the model.
 def parse_structured_response(raw_content: str | None) -> dict[str, Any]:
     if not raw_content:
         raise ValueError("OpenRouter returned an empty response.")
@@ -142,6 +154,7 @@ def parse_structured_response(raw_content: str | None) -> dict[str, Any]:
     return sanitize_classification_payload(parsed)
 
 
+# Pull the API cost from the model response.
 def extract_cost(response_json: dict[str, Any]) -> float | None:
     usage = response_json.get("usage") or {}
     if not isinstance(usage, dict):
@@ -165,6 +178,7 @@ def extract_cost(response_json: dict[str, Any]) -> float | None:
     return None
 
 
+# Build the full OpenRouter message for a file.
 def build_user_message(file_path: Path) -> dict[str, Any]:
     prompt = build_document_prompt(file_path)
     ext = file_path.suffix.lower()
@@ -211,6 +225,7 @@ def build_user_message(file_path: Path) -> dict[str, Any]:
     }
 
 
+# Send a message to OpenRouter and return the raw API response.
 def call_openrouter(messages: list[dict[str, Any]], api_key: str, model_name: str) -> dict[str, Any]:
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -241,6 +256,7 @@ def call_openrouter(messages: list[dict[str, Any]], api_key: str, model_name: st
     return response.json()
 
 
+# Classify a single file and return the normalized result.
 def classify_file(file_path: Path, api_key: str, model_name: str) -> dict[str, Any]:
     message = build_user_message(file_path)
     response = call_openrouter([message], api_key, model_name)
@@ -254,6 +270,7 @@ def classify_file(file_path: Path, api_key: str, model_name: str) -> dict[str, A
     }
 
 
+# Classify each supported attachment in an email and choose the strongest result.
 def classify_email_attachments(file_path: Path, api_key: str, model_name: str) -> dict[str, Any]:
     email_data = extract_email_metadata(file_path)
     attachments = email_data["attachments"]
@@ -305,7 +322,7 @@ def classify_email_attachments(file_path: Path, api_key: str, model_name: str) -
             best_result = max(supported_results, key=_conf)
     else:
         best_result = max(supported_results, key=_conf)
-    evidence = [f"Found {len(supported_results)} supported attachment(s) in the email."]
+    evidence = [f"Found {len(supported_results)} supported attachment(s) in the email.']
 
     # Note selection rationale
     if best_result["result"].get("label") != "other":

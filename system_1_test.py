@@ -18,6 +18,10 @@ import pytesseract
 import re
 
 
+# Lightweight local classification utilities used for quick system-level tests.
+# - Extract text from PDFs, images, Excel and email files
+# - Build a payload for a JEV-style classification API and parse the response
+
 LABELS = [
     "supplier_invoice",
     "credit_note",

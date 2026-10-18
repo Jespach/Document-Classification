@@ -6,6 +6,9 @@ from pathlib import Path
 from classify import classify_file, get_api_key, get_model_name
 
 
+# Simple test harness for running known test cases.
+# - Maps some filenames to expected labels
+# - Runs each case and prints a summary table
 # Update this mapping if you want to override the expected label for any case.
 EXPECTED_LABELS = {
     "Karoo Knitwear - 10482.pdf": "supplier_invoice",

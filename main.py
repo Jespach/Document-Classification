@@ -7,10 +7,14 @@ from pathlib import Path
 from classify import classify_file, get_api_key, get_model_name
 from ingest import SUPPORTED_EXTENSIONS, list_input_files, resolve_input_dir
 
+# Command-line runner for classifying files in the input directory.
+# - Finds supported files, calls the classifier, prints a brief table, and saves full JSON output.
+
 
 OUTPUT_FILE = Path(__file__).resolve().parent / "output.json"
 
 
+# Format a single result row for the console output.
 def format_table_row(file_name: str, document_type: str, reasoning: str, cost: float | None) -> str:
     clean_reasoning = reasoning.strip().replace("\n", " ")
     if len(clean_reasoning) > 80:
@@ -19,6 +23,7 @@ def format_table_row(file_name: str, document_type: str, reasoning: str, cost: f
     return f"{file_name:<30} | {document_type:<18} | {clean_reasoning:<80} | {cost_label}"
 
 
+# Run the classification pipeline across all supported files.
 def main() -> None:
     parser = argparse.ArgumentParser(description="Ingest supported documents and send each file through OpenRouter for analysis.")
     parser.add_argument("--input-dir", default=None, help="Directory containing documents to analyze. Defaults to ./input or ./Input if present.")
