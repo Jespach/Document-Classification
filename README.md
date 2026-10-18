@@ -32,7 +32,7 @@ The workflow is:
 
 ## Assumptions and notes
 
-- Email attachments: when multiple supported attachments are present, the script chooses the single attachment with the highest confidence as the email-level result, and includes disagreement in the evidence if labels differ.
+- Email attachments: when multiple supported attachments are present, the script chooses the single attachment(not "Other") with the highest confidence as the email-level result, and includes disagreement in the evidence if labels differ.
 - Missing attachments: if an email body says a document was attached or enclosed but no supported attachment is found, the script sets `missing_attachment` to `true` and still sends the email body to the model for classification. This is meant to catch cover notes and forwarding emails that include the actual document details in the body instead of a file attachment.
 - Cover-note-only emails: if the body clearly refers to an absent attachment but contains no actual document content, the model should classify as `other` with `missing_attachment` set to `true`.
 - `.xls` limitation: legacy `.xls` files are not supported by `openpyxl`; the script raises a clear error and asks the user to convert to `.xlsx` first.
