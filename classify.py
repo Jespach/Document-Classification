@@ -289,12 +289,33 @@ def classify_email_attachments(file_path: Path, api_key: str, model_name: str) -
             "email": email_data,
         }
 
-    best_result = max(supported_results, key=lambda item: float(item["result"].get("confidence", 0.0) or 0.0))
+    # Prefer the highest-confidence attachment that is NOT labeled "other"
+    def _conf(item: dict[str, Any]) -> float:
+        try:
+            return float(item["result"].get("confidence", 0.0) or 0.0)
+        except (TypeError, ValueError):
+            return 0.0
+
     labels = [item["result"].get("label") for item in supported_results]
-    evidence = [
-        f"Found {len(supported_results)} supported attachment(s) in the email.",
-        f"Selected attachment {best_result['file']} because it had the highest confidence ({best_result['result'].get('confidence')}).",
-    ]
+    if len(supported_results) > 1:
+        non_other = [item for item in supported_results if item["result"].get("label") != "other"]
+        if non_other:
+            best_result = max(non_other, key=_conf)
+        else:
+            best_result = max(supported_results, key=_conf)
+    else:
+        best_result = max(supported_results, key=_conf)
+    evidence = [f"Found {len(supported_results)} supported attachment(s) in the email."]
+
+    # Note selection rationale
+    if best_result["result"].get("label") != "other":
+        evidence.append(
+            f"Selected attachment {best_result['file']} because it had the highest confidence among non-'other' labels ({best_result['result'].get('confidence')})."
+        )
+    else:
+        evidence.append(
+            f"Selected attachment {best_result['file']} because all attachments were labeled 'other' or no non-'other' label had higher confidence ({best_result['result'].get('confidence')})."
+        )
     if len(set(labels)) > 1:
         evidence.append(f"Attachment labels disagreed: {', '.join(sorted(set(labels)))}. Review manually.")
 
